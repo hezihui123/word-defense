@@ -1,0 +1,10 @@
+dialog.rotate-phone {
+  position: fixed; inset: 0; margin: auto; width: min(82vw, 320px);
+  height: fit-content; padding: 30px 20px; border: 0; border-radius: 24px;
+  background: #fffdf4; color: #233d2c; text-align: center;
+  box-shadow: 0 12px 40px #153d2930;
+}
+.rotate-phone::backdrop { background: #deefdf; }
+.rotate-phone span { display: block; color: #388640; font: bold 48px/1 sans-serif; }
+.rotate-phone h2 { margin: 14px 0 8px; font-size: 24px; }
+.rotate-phone p { margin: 0; font-size: 16px; }
