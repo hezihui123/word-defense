@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 76">
+<defs><linearGradient id="paint" x2=".25" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#ffb060"/><stop offset=".4" stop-color="#f0643a"/><stop offset="1" stop-color="#bd3932"/></linearGradient></defs>
+<ellipse cx="60" cy="69" rx="54" ry="4" fill="#344820" opacity=".19"/>
+<g stroke="#523c32" stroke-width="2.8" stroke-linejoin="round">
+<path d="M13 35 17 14Q18 9 26 8L60 7Q68 7 73 14L86 32 108 37Q113 38 114 47L114 56 7 56 6 40Q6 36 13 35Z" fill="url(#paint)"/>
+<path d="m23 14 17-1 1 18-21 1Z" fill="#90d6dd"/><path d="m46 13 14-1q5 0 9 6l9 13H47Z" fill="#c6f2f0"/>
+<path d="m26 16 7-1-9 12h-3zm25 0 8-1-9 13h-2z" stroke="none" fill="#fff" opacity=".72"/>
+<path d="M44 34v16h27l6-15" fill="none" stroke="#b74732" stroke-width="1.6"/>
+<path d="M49 36h7" stroke="#613d33" stroke-linecap="round"/>
+<path d="M8 46h104v9H8z" fill="#de4833"/><path d="M6 53h109v6H6z" fill="#788781"/>
+<path d="M103 39h8l2 7h-11z" fill="#ffe68b"/><path d="M7 39h6v7H7z" fill="#f8a34f"/>
+</g>
+</svg>

@@ -1,0 +1,185 @@
+/* TV 固定舞台：html 严格等于视口且禁止滚动，body 才是 1920x1080 的缩放舞台。
+ * 关键：html 不能也是 1920px，否则视口更小时根文档产生横向滚动条，
+ * focus/导航一触发就把整本书推出屏幕（点“换一个单元”后左侧消失的根因）。 */
+html {
+  width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important;
+  overflow: hidden !important; position: fixed !important; left: 0 !important; top: 0 !important;
+}
+body {
+  width: 1920px !important; height: 1080px !important; margin: 0 !important; padding: 0 !important;
+  overflow: hidden !important; position: absolute !important; left: 0; top: 0;
+  -webkit-transform-origin: 0 0; transform-origin: 0 0; background: #10242b !important;
+}
+.focused, .focused:focus-visible { outline: 5px solid #ffd54f !important; outline-offset: 3px; z-index: 60 !important; }
+
+/* ---------- 首页（desk.html / index.html） ---------- */
+.desk-ready .desk { display: block !important; position: relative; width: 1920px; height: 1080px; }
+.desk .masthead { position: absolute; left: 0; top: 0; width: 1920px; height: 64px; padding: 0 46px; display: block; }
+.desk .masthead a { position: absolute; left: 46px; top: 20px; font-size: 18px; }
+.desk .masthead .project-qr-trigger { position: absolute; right: 46px; top: 12px; font-size: 18px; }
+.desk .headline { position: absolute; left: 0; top: 70px; width: 1920px; }
+.desk .headline h1 { font-size: 68px; margin: 6px 0; }
+.desk .headline .edition { font-size: 17px; }
+.desk .headline .instruction { font-size: 22px; }
+.desk .stage { position: absolute; left: 0; top: 210px; width: 1920px; height: 720px; display: block; padding: 0; perspective: none; }
+.desk .books { position: absolute; left: 0; top: 0; width: 1920px; height: 700px; display: block; }
+.desk .stack { position: absolute; top: 70px; width: 400px; height: 560px; display: block; left: 0; }
+.desk .stack:nth-child(1) { left: 60px; }
+.desk .stack:nth-child(2) { left: 520px; }
+.desk .stack:nth-child(3) { left: 980px; }
+.desk .stack:nth-child(4) { left: 1440px; }
+.desk .book-pile { position: relative; width: 400px; height: 470px; }
+.desk .volume-book { left: 20px !important; bottom: 20px !important; width: 280px; height: 380px; font-size: 20px; }
+.desk .volume-book.lower { left: 130px !important; bottom: 28px !important; }
+.desk .book-label { display: block; text-align: center; font-size: 28px; margin-top: 8px; }
+.desk .desk-footer { position: absolute; left: 0; bottom: 0; width: 1920px; font-size: 17px; }
+.mega-link { position: absolute; left: 750px; top: 860px; width: 420px; height: 120px; line-height: 120px; text-align: center;
+  font-size: 28px; font-weight: bold; color: #fff3c4; text-decoration: none; border-radius: 18px;
+  background: #a45a1e; border: 4px solid #ff9800; box-shadow: 0 6px 0 #6d3a10; }
+/* 主界面“关于”入口 */
+.about-btn { position: absolute !important; right: 46px; top: 14px; z-index: 60;
+  font-size: 24px; font-weight: bold; color: #fff3c4; padding: 10px 26px;
+  border-radius: 12px; background: #a45a1e; border: 3px solid #ff9800; }
+/* 关于弹窗：覆盖全局 dialog[open] 的全屏样式，改为居中卡片 */
+dialog.about-dialog[open] { left: 50% !important; top: 50% !important; margin: 0 !important;
+  width: 900px !important; height: 800px !important; max-width: none !important; max-height: none !important;
+  -webkit-transform: translate(-50%, -50%); transform: translate(-50%, -50%);
+  background: #fbefce !important; border: 6px solid #c8a24a; border-radius: 24px;
+  padding: 30px; z-index: 260; overflow: hidden; }
+.about-box { text-align: center; }
+.about-box .about-qr { display: block; width: 480px; height: 480px; margin: 10px auto 18px;
+  image-rendering: pixelated; border: 4px solid #333; background: #fff; }
+.about-box h2 { font-size: 40px; color: #1d4d33; margin: 0 0 12px; }
+.about-box p { font-size: 24px; color: #4a3b1f; margin: 0 0 18px; }
+.about-box .about-close { font-size: 28px; padding: 14px 46px; border-radius: 12px;
+  background: #2e7d32; color: #fff; border: 3px solid #1b5e20; }
+/* 电视恒为横屏，隐藏“请旋转手机”提示弹窗 */
+dialog.rotate-phone { display: none !important; }
+/* 4.4 无原生 dialog：关闭时必须显式隐藏（未知元素默认 display:inline 会露出来） */
+dialog:not([open]) { display: none !important; }
+dialog[open] {
+  display: block !important; position: absolute !important; left: 0; top: 0; margin: 0 !important;
+  width: 1920px; height: 1080px; max-width: none !important; max-height: none !important;
+  background: #fbefce !important; border-radius: 0; padding: 0; z-index: 200; overflow: hidden;
+}
+dialog::backdrop { background: rgba(8, 20, 20, 0.75); }
+/* 4.4 没有 grid：把摊开的书改成左右两栏 flex，右栏可滚动 */
+.open-book { display: -webkit-box !important; display: flex !important; -webkit-box-orient: horizontal; flex-direction: row;
+  width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important;
+  border: 0; border-radius: 0; overflow: hidden; }
+.book-dialog[open] .open-book, .book-dialog[open] .book-left { animation: none !important; }
+.book-left { display: block !important; width: 38%; height: 100%; flex: none; padding: 340px 20px 0; text-align: center; overflow: hidden; }
+.book-left strong { display: block; font-size: 36px !important; line-height: 1.3; }
+.book-left span { display: block; font-size: 26px; margin-top: 14px; }
+.book-right { width: 62%; height: 100%; flex: none; padding: 20px 46px; overflow: hidden; }
+.book-right header { height: 60px; }
+.book-right h2 { font-size: 24px; }
+.unit-links { display: block !important; margin-top: 6px; }
+.open-book .card { display: -webkit-box !important; display: flex !important; -webkit-box-align: center; align-items: center;
+  height: 96px; padding: 0 6px; border-top: 1px solid #c9b89380; overflow: hidden; }
+.open-book .card .no { flex: none; width: 42px; height: 42px; line-height: 42px; font-size: 21px; text-align: center; }
+.open-book .card .nm { flex: 1; font-size: 20px; line-height: 1.25; padding-left: 12px; }
+.open-book .card .nm small { font-size: 14px; margin-top: 2px; }
+.open-book .card .go { flex: none; font-size: 18px; padding-left: 10px; }
+.edition-note { font-size: 14px; margin: 2px 0 4px; }
+.whole { height: 52px; line-height: 52px; border-top: 1px solid #c9b89380; }
+.whole a { font-size: 16px; }
+.book-close { min-height: 40px; font-size: 17px; }
+
+/* ---------- 单元页 / 游戏页 ---------- */
+#home { position: absolute !important; left: 0; top: 0; width: 1920px !important; height: 1080px !important; padding: 20px 30px !important; overflow: hidden !important; display: block !important; }
+#home.hide { display: none !important; }
+.title { margin: 0 0 10px !important; }
+.title h1 { font-size: 64px !important; }
+.title p { font-size: 24px !important; }
+.speed { display: block !important; text-align: center; margin: 0 0 18px !important; }
+.speed button { display: inline-block !important; margin: 0 10px 8px 0 !important; font-size: 27px !important; padding: 14px 38px !important; }
+.levels { display: block !important; max-width: none !important; margin: 0 !important; }
+.lv { position: absolute; width: 580px; height: 260px; margin: 0 !important; padding: 18px !important; box-sizing: border-box; }
+.lv:nth-child(1) { left: 40px;  top: 170px; }
+.lv:nth-child(2) { left: 670px; top: 170px; }
+.lv:nth-child(3) { left: 1300px; top: 170px; }
+.lv:nth-child(4) { left: 40px;  top: 450px; }
+.lv:nth-child(5) { left: 670px; top: 450px; }
+.lv:nth-child(6) { left: 1300px; top: 450px; }
+.lv:nth-child(7) { left: 40px;  top: 730px; }
+.lv:nth-child(8) { left: 670px; top: 730px; }
+.lv .no { width: 64px; height: 64px; font-size: 30px; }
+.lv .nm { font-size: 26px; }
+.lv .nm small { font-size: 18px; }
+.lv .stars { font-size: 28px; }
+.lv .pics { font-size: 30px; }
+.lv .btns { display: block; margin-top: 10px; }
+.lv .btns button { display: inline-block; width: 48%; margin-right: 2%; font-size: 23px; padding: 14px 0; }
+#switch { position: absolute; left: 40px; top: 1010px; }
+#switch a { font-size: 26px; }
+/* 单单元入口页：一张大卡片居中铺开 */
+body.single .lv:nth-child(1) { left: 360px; top: 200px; width: 1200px; height: 680px; padding: 40px !important; }
+body.single .lv .no { width: 100px; height: 100px; font-size: 48px; }
+body.single .lv .nm { font-size: 46px; }
+body.single .lv .nm small { font-size: 28px; }
+body.single .lv .stars { font-size: 44px; }
+body.single .lv .pics { font-size: 72px; margin: 40px 0; }
+body.single .lv .btns { margin-top: 120px; }
+body.single .lv .btns button { font-size: 36px; padding: 30px 0; }
+body.single #switch { left: 40px; top: 960px; }
+body.single #switch a { font-size: 32px; }
+
+#game { position: absolute !important; left: 0; top: 0; width: 1920px !important; height: 1080px !important; display: -webkit-box; -webkit-box-orient: vertical; display: flex; flex-direction: column; }
+#game.hide { display: none !important; }
+#bar { position: relative; height: 80px; flex: none; display: block; padding: 0 20px; }
+#bar .bbtn { display: none !important; }
+.tv-menu { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: rgba(6,18,28,.78); z-index: 300; display: none; }
+.tv-menu.on { display: block; }
+.tv-menu .panel { position: absolute; left: 560px; top: 240px; width: 800px; height: 600px; background: #173b5b; border: 6px solid #59a8d8; border-radius: 28px; text-align: center; }
+.tv-menu h3 { color: #ffd479; font-size: 46px; margin: 50px 0 40px; }
+.tv-menu button { display: block; width: 560px; height: 96px; margin: 18px auto; font-size: 32px; font-weight: bold; color: #fff; background: #277a4b; border: 4px solid #4caf50; border-radius: 16px; }
+#quit { right: 20px; }
+#pause { right: 170px; }
+#shovel { right: 320px; }
+#wave { position: absolute; left: 360px; top: 20px; width: 900px; font-size: 26px; display: block; }
+#belt { position: relative; width: 1920px; height: 176px; flex: none; }
+#field { position: relative; width: 1920px; flex: 1; overflow: hidden; }
+/* 只保留 #tv-place-cursor 一个落点框：去掉游戏自带高亮的 4px 外圈，避免和植物错位重影 */
+#field .cell.hl { box-shadow: inset 0 0 18px rgba(255,235,59,.35) !important; }
+#banner { font-size: 54px; }
+#modal.mask { position: absolute !important; left: 0; top: 0; width: 1920px; height: 1080px; z-index: 150; text-align: center; padding: 60px 0; }
+#modal .box { width: 1560px !important; height: 960px; max-height: none !important; margin: 0 auto; padding: 30px 40px; overflow: hidden; }
+#modal .box h2 { font-size: 48px; }
+#modal .box .sub { font-size: 24px; margin: 10px 0 20px; }
+#modal .box .big { font-size: 110px; }
+#modal .box .row { margin-top: 24px; }
+#modal .box .row button { font-size: 30px; padding: 20px 44px; }
+#modal .tiles { display: block !important; text-align: center; margin-top: 40px; }
+/* 认读页每页只放 4 个词，放大到电视上清晰可读 */
+#modal .tile { display: inline-block; vertical-align: top; width: 320px; height: 400px; margin: 20px; padding: 24px 12px; box-sizing: border-box; }
+#modal .tile .p { font-size: 150px; height: 200px; line-height: 200px; }
+#modal .tile b { font-size: 44px; }
+#modal .tile small { font-size: 26px; }
+#modal .tile .tag { font-size: 22px !important; padding: 6px 16px !important; }
+/* 认读分页导航 */
+#modal .learn-nav { margin-top: 36px; }
+#modal .learn-nav button { font-size: 34px; padding: 22px 50px; }
+#modal .learn-nav button[disabled] { opacity: .35; }
+#modal .learn-nav .pageno { display: inline-block; font-size: 36px; font-weight: bold; color: #2e5e8c; margin: 0 60px; vertical-align: middle; }
+#modal .kin h3 { font-size: 28px; }
+#modal .legend { font-size: 20px; }
+
+/* 4.4 WebView 不支持 CSS 变量：为动态变量提供静态兜底 */
+.desk .table, .desk .books, .desk .volume-book { transform: none !important; }
+.desk .textbook { background: radial-gradient(ellipse at 70% 30%, #ffffff36, transparent 56%), #327160 !important; }
+.stack:nth-child(1) .volume-book.upper .textbook { background-color: #327160 !important; }
+.stack:nth-child(1) .volume-book.lower .textbook { background-color: #386153 !important; }
+.stack:nth-child(2) .volume-book.upper .textbook { background-color: #416883 !important; }
+.stack:nth-child(2) .volume-book.lower .textbook { background-color: #36546e !important; }
+.stack:nth-child(3) .volume-book.upper .textbook { background-color: #a9603f !important; }
+.stack:nth-child(3) .volume-book.lower .textbook { background-color: #854b36 !important; }
+.stack:nth-child(4) .volume-book.upper .textbook { background-color: #745780 !important; }
+.stack:nth-child(4) .volume-book.lower .textbook { background-color: #544363 !important; }
+.book-left span { color: #2e7d32 !important; }
+.letter { animation-delay: 0ms !important; }
+.paint { background: #e53935; }
+.tur .badge { left: 0.175em; top: -0.45em; width: 0.45em; height: 0.45em; border-radius: 0.09em; border: 2px solid #3a8f26; }
+.tur .badge .emo { font-size: 0.315em; }
+.mon .head { background: #9ccc65; }
+.mon .body { background: #5d7fa3; }

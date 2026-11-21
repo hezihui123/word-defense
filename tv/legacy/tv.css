@@ -1,0 +1,106 @@
+/* 单词保卫战 TV 版样式：只使用 Android 4.4 WebView 支持的 CSS。
+   布局基于 1920x1080 固定舞台，由 tv.js 整体缩放，避免 vw/vh/clamp/grid/gap/变量。 */
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0b1726; color: #ffffff; font-family: sans-serif; -webkit-user-select: none; user-select: none; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); }
+#stage { position: absolute; width: 1920px; height: 1080px; overflow: hidden; background: #10263d; -webkit-transform-origin: 0 0; transform-origin: 0 0; }
+.screen { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: none; }
+.screen.on { display: block; }
+.hide { display: none !important; }
+
+.hd { position: absolute; left: 0; top: 0; width: 1920px; height: 110px; background: #123452; border-bottom: 6px solid #3bb463; }
+.hd h1 { position: absolute; left: 54px; top: 20px; margin: 0; font-size: 44px; color: #ffffff; letter-spacing: 3px; }
+.hd p { position: absolute; left: 56px; top: 72px; margin: 0; font-size: 20px; color: #9fd8ff; }
+.hd .hint { position: absolute; right: 54px; top: 34px; font-size: 21px; color: #b9d7ec; }
+.tipbar { position: absolute; left: 0; bottom: 0; width: 1920px; height: 60px; background: #0a1b2c; color: #9fc4df; font-size: 20px; line-height: 60px; text-align: center; }
+
+.card { position: absolute; background: #1c4265; border: 4px solid #315d80; border-radius: 18px; color: #ffffff; overflow: hidden; }
+.card .t { display: block; font-size: 28px; font-weight: bold; padding: 18px 16px 6px 16px; }
+.card .s { display: block; font-size: 19px; color: #a8cde7; padding: 0 16px; line-height: 26px; }
+.card .n { position: absolute; right: 18px; bottom: 14px; font-size: 18px; color: #ffd479; }
+.card.book .cover { position: absolute; left: 18px; top: 22px; width: 68px; height: 92px; background: #2f7d5a; border-radius: 8px; border: 3px solid #8fd6b0; text-align: center; }
+.card.book .cover span { display: block; color: #ffffff; font-size: 46px; line-height: 86px; font-weight: bold; }
+.card.book .info { position: absolute; left: 106px; top: 24px; }
+.card.book .info b { display: block; font-size: 30px; }
+.card.book .info i { display: block; font-style: normal; font-size: 18px; color: #a8cde7; margin-top: 10px; }
+.card.unit .no { position: absolute; left: 18px; top: 20px; width: 70px; height: 70px; border-radius: 14px; background: #2e8b57; font-size: 34px; line-height: 70px; text-align: center; font-weight: bold; }
+.card.unit .nm { position: absolute; left: 104px; top: 16px; font-size: 26px; font-weight: bold; }
+.card.unit .zh { position: absolute; left: 104px; top: 54px; font-size: 19px; color: #a8cde7; }
+.card.unit .st { position: absolute; left: 104px; top: 88px; font-size: 20px; color: #ffd479; }
+.focusable.focused { border-color: #ffd54f !important; background: #24557e !important; box-shadow: 0 0 0 6px rgba(255,213,79,0.30), 0 14px 30px rgba(0,0,0,0.45); z-index: 20; }
+.focusable.focused .t { color: #ffffff; }
+
+.btn { position: absolute; background: #277a4b; border: 4px solid #4caf50; border-radius: 16px; color: #ffffff; font-size: 28px; font-weight: bold; text-align: center; line-height: 76px; }
+.btn.blue { background: #1d5b8c; border-color: #3fa9f5; }
+.btn.orange { background: #a45a1e; border-color: #ff9800; }
+.btn.red { background: #9c2f2f; border-color: #f44336; }
+
+#screen-mode .modebox { position: absolute; left: 460px; top: 210px; width: 1000px; height: 660px; background: #173b5b; border: 5px solid #3a6c92; border-radius: 28px; }
+#screen-mode .modebox h2 { margin: 36px 0 0 0; text-align: center; font-size: 46px; }
+#screen-mode .modebox p { margin: 18px 0 0 0; text-align: center; font-size: 22px; color: #a8cde7; }
+#screen-mode .btn { width: 780px; height: 96px; left: 110px; line-height: 88px; }
+#screen-mode .b-learn { top: 330px; }
+#screen-mode .b-play { top: 470px; }
+
+#screen-learn .picbox { position: absolute; left: 60px; top: 150px; width: 500px; height: 500px; background: #f4fbff; border-radius: 28px; border: 6px solid #7ec1e8; overflow: hidden; }
+#screen-learn .picbox svg { width: 100%; height: 100%; }
+#screen-learn .picbox .bigword { font-size: 110px; color: #234a63; text-align: center; line-height: 500px; font-weight: bold; }
+#screen-learn .detail { position: absolute; left: 610px; top: 170px; font-size: 40px; }
+#screen-learn .detail small { display: block; font-size: 26px; color: #a8cde7; margin-top: 16px; }
+#screen-learn .wordcell { position: absolute; background: #1c4265; border: 4px solid #315d80; border-radius: 14px; font-size: 24px; text-align: center; line-height: 62px; overflow: hidden; white-space: nowrap; }
+#screen-learn .playsound { position: absolute; left: 610px; top: 300px; width: 320px; height: 84px; }
+#screen-learn .learn-nav { top: 830px; width: 240px; height: 76px; font-size: 25px; line-height: 68px; }
+#screen-learn #learn-prev { left: 620px; }
+#screen-learn #learn-next { left: 890px; }
+#screen-learn .learn-page { position: absolute; left: 1170px; top: 846px; width: 620px; font-size: 24px; color: #a8cde7; }
+
+/* 游戏画面 */
+#screen-game { background: #0d2338; }
+#bar { position: absolute; left: 0; top: 0; width: 1920px; height: 92px; background: #123452; border-bottom: 5px solid #3bb463; }
+#bar .info { position: absolute; left: 40px; top: 22px; font-size: 27px; color: #ffffff; }
+#bar .wave { position: absolute; left: 640px; top: 22px; font-size: 27px; color: #ffd479; }
+#bar .cartinfo { position: absolute; left: 1060px; top: 22px; font-size: 27px; color: #8fe0a0; }
+#bar .targets { position: absolute; left: 40px; top: 56px; width: 1420px; height: 28px; font-size: 20px; color: #ffd479; overflow: hidden; white-space: nowrap; }
+#bar .btnbar { position: absolute; right: 26px; top: 10px; width: 150px; height: 70px; font-size: 24px; line-height: 62px; }
+#bar .btnbar.shovel { right: 196px; }
+#bar .btnbar.on { background: #a45a1e; border-color: #ff9800; }
+#field { position: absolute; left: 0; top: 92px; width: 1920px; height: 760px; overflow: hidden; }
+.lane { position: absolute; left: 0; width: 1920px; height: 190px; border-bottom: 3px solid #2b6b3a; background: #4d9c48; }
+.lane:nth-child(odd) { background: #55a64e; }
+.cell { position: absolute; top: 28px; width: 182px; height: 136px; border: 2px dashed rgba(255,255,255,0.20); border-radius: 12px; }
+.cell.hl { border: 6px solid #ffd54f; background: rgba(255,213,79,0.25); }
+.cart { position: absolute; left: 60px; top: 40px; width: 160px; height: 110px; background: #e64a19; border: 5px solid #7f2704; border-radius: 16px; font-size: 30px; line-height: 100px; text-align: center; }
+.cart.used { background: #6b6b6b; border-color: #444444; color: #999999; }
+.plant, .monster, .pea, .fx { position: absolute; overflow: hidden; }
+.plant { width: 130px; height: 130px; background: rgba(255,255,255,0.88); border: 4px solid #3a7d3d; border-radius: 16px; }
+.plant svg, .monster svg, .cardicon svg, .picbox svg { display: block; width: 100%; height: 100%; }
+.plant .art, .monster .art svg { width: 100%; height: 100%; }
+.carditem .cardicon .emo { font-size: 74px; line-height: 112px; }
+.plant .word, .monster .word { position: absolute; left: 0; bottom: 0; width: 100%; height: 36px; background: rgba(0,0,0,0.68); color: #ffffff; font-size: 20px; line-height: 36px; text-align: center; }
+.monster { width: 150px; height: 150px; background: #f1e1c8; border: 5px solid #795548; border-radius: 20px; }
+.monster.rage { border-color: #e53935; box-shadow: 0 0 20px #e53935; }
+.monster .art { position: absolute; left: 6px; top: 4px; width: 132px; height: 108px; text-align: center; font-size: 76px; line-height: 108px; }
+.pea { width: 30px; height: 30px; background: #7ed321; border: 3px solid #3b6b12; border-radius: 50%; }
+.fx { color: #ffffff; font-size: 30px; font-weight: bold; text-shadow: 0 2px 4px #000000; }
+#banner { position: absolute; left: 560px; top: 260px; width: 800px; height: 100px; background: rgba(0,0,0,0.72); color: #ffffff; font-size: 52px; line-height: 100px; text-align: center; border-radius: 18px; display: none; }
+#belt { position: absolute; left: 0; top: 852px; width: 1920px; height: 228px; background: #123043; border-top: 6px solid #3bb463; }
+#belt .beltlabel { position: absolute; left: 40px; top: 22px; font-size: 23px; color: #9fc4df; }
+.carditem { position: absolute; top: 48px; width: 190px; height: 170px; background: #f7fbdf; border: 5px solid #d8e58a; border-radius: 14px; color: #1b4021; overflow: hidden; }
+.carditem .cardicon { position: absolute; left: 5px; top: 0; width: 176px; height: 112px; text-align: center; overflow: hidden; }
+.carditem .cardicon svg { width: 100%; height: 112px; }
+.carditem .cardicon .emo { font-size: 74px; line-height: 112px; }
+.carditem .cw { position: absolute; left: 0; bottom: 0; width: 100%; height: 46px; background: #e8f2c8; font-size: 24px; line-height: 46px; text-align: center; font-weight: bold; }
+#placement { position: absolute; left: 0; top: 92px; width: 1920px; height: 760px; display: none; }
+#placement.on { display: block; }
+#placement .cursor { position: absolute; width: 182px; height: 166px; border: 8px solid #ffd54f; background: rgba(255,213,79,0.22); border-radius: 16px; }
+#placement .ptip { position: absolute; left: 0; bottom: -72px; width: 1920px; text-align: center; font-size: 24px; color: #ffffff; background: rgba(0,0,0,0.5); line-height: 52px; }
+#gamehint { position: absolute; left: 0; bottom: 4px; width: 1920px; text-align: center; font-size: 19px; color: #8fb8d5; }
+
+/* 弹层 */
+#overlay { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: rgba(4,16,28,0.78); display: none; z-index: 100; }
+#overlay.on { display: block; }
+#overlay .panel { position: absolute; left: 460px; top: 220px; width: 1000px; height: 640px; background: #173b5b; border: 6px solid #59a8d8; border-radius: 30px; }
+#overlay h2 { position: absolute; left: 0; top: 46px; width: 1000px; text-align: center; margin: 0; font-size: 62px; color: #ffd479; }
+#overlay .msg { position: absolute; left: 40px; top: 160px; width: 920px; text-align: center; font-size: 30px; line-height: 52px; color: #d8ecfa; }
+#overlay .btn { width: 380px; height: 90px; left: 310px; line-height: 82px; }
+#overlay .b1 { top: 330px; }
+#overlay .b2 { top: 460px; }
