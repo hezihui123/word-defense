@@ -214,7 +214,7 @@ function transformHtml(srcName, dstName) {
     html = html.replace(/\sid="(volume-[0-3]-[01])"/g, ' id="tv-$1"');
   }
   // 所有本地 JS/CSS 统一带版本号，避免 WebView 缓存旧脚本导致修复不生效。
-  const V = 'v15';
+  const V = 'v16';
   html = html.replace(/(\.css)(\?[^"']*)?/g, '$1?v=' + V);
   html = html.replace(/(\.js)(\?[^"']*)?/g, '$1?v=' + V);
   const compat = '<script src="compat.js?v=' + V + '"></script>\n';

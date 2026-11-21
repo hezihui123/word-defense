@@ -406,7 +406,14 @@
         openMenu();
         return true;
       }
-      // 4) 首页 / 单元首页：确认是否关闭软件
+      // 4) 单元入口页：返回单元选择界面，等同点击「← 换一个单元」。
+      //    这里绝不能弹退出框：用户只是想换单元/回书本，不是要关软件。
+      var sw = $('switch');
+      if (home && String(home.className).indexOf('hide') < 0 && sw) {
+        var link = sw.querySelector('a');
+        if (link && link.click) { link.click(); return true; }
+      }
+      // 5) 真正的首页（书本选择页）：确认是否关闭软件
       openExitDialog();
       return true;
     }
