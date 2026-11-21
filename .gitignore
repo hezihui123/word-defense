@@ -5,6 +5,9 @@ tv/tools/node_modules/
 # 调试截图（只保留 docs/images/ 下的正式配图）
 tv/*.png
 
+# 签名工具生成的附属文件
+tv/*.apk.idsig
+
 # 系统文件
 .DS_Store
 Thumbs.db

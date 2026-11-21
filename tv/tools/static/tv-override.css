@@ -134,6 +134,16 @@ body.single #switch a { font-size: 32px; }
 .tv-menu .panel { position: absolute; left: 560px; top: 240px; width: 800px; height: 600px; background: #173b5b; border: 6px solid #59a8d8; border-radius: 28px; text-align: center; }
 .tv-menu h3 { color: #ffd479; font-size: 46px; margin: 50px 0 40px; }
 .tv-menu button { display: block; width: 560px; height: 96px; margin: 18px auto; font-size: 32px; font-weight: bold; color: #fff; background: #277a4b; border: 4px solid #4caf50; border-radius: 16px; }
+/* 首页返回键：确认关闭软件 */
+.tv-confirm { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: rgba(6,18,28,.82); z-index: 400; display: none; }
+.tv-confirm.on { display: block; }
+.tv-confirm .panel { position: absolute; left: 510px; top: 280px; width: 900px; height: 520px; background: #173b5b; border: 6px solid #59a8d8; border-radius: 28px; text-align: center; }
+.tv-confirm h3 { color: #ffd479; font-size: 54px; margin: 52px 0 18px; }
+.tv-confirm p { color: #e8f4ff; font-size: 34px; margin: 0 0 44px; }
+.tv-confirm .row { text-align: center; }
+.tv-confirm button { display: inline-block; width: 300px; height: 100px; margin: 0 24px; font-size: 36px; font-weight: bold; color: #fff; border: 4px solid #4caf50; border-radius: 16px; background: #277a4b; }
+.tv-confirm button[data-act="cancel"] { background: #455a64; border-color: #90a4ae; }
+.tv-confirm button[data-act="exit"] { background: #b71c1c; border-color: #ef5350; }
 #quit { right: 20px; }
 #pause { right: 170px; }
 #shovel { right: 320px; }

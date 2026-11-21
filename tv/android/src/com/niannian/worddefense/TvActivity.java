@@ -6,6 +6,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -50,9 +51,26 @@ public class TvActivity extends Activity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                // 网页“退出”按钮的兜底通道：捕获自定义 scheme 后彻底关闭。
+                if (url != null && url.startsWith("tvexit://")) {
+                    finish();
+                    return true;
+                }
                 return url == null || !url.startsWith("file:///android_asset/");
             }
         });
+        // 网页确认退出后直接调用，真正关闭 APK（而不是只返回首页）。
+        webView.addJavascriptInterface(new Object() {
+            @JavascriptInterface
+            public void exitApp() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                });
+            }
+        }, "tvBridge");
         webView.setWebChromeClient(new WebChromeClient());
         webView.setFocusable(true);
         webView.setFocusableInTouchMode(true);

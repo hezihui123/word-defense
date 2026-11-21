@@ -4,7 +4,7 @@
   'use strict';
 
   var BASE_W = 1920, BASE_H = 1080;
-  var state = { focus: null, drag: null, menu: false };
+  var state = { focus: null, drag: null, menu: false, exit: false };
   var FOCUS_SEL = 'button, a[href], .volume-book, .card, .bbtn, input, [tabindex="0"]';
 
   function $(id) { return document.getElementById(id); }
@@ -19,6 +19,12 @@
     return true;
   }
   function focusables() {
+    if (state.exit) {
+      var eb = document.querySelectorAll('#tv-exit-dialog button');
+      var eout = [];
+      for (var e = 0; e < eb.length; e++) if (eb[e].offsetWidth > 0) eout.push(eb[e]);
+      return eout;
+    }
     if (state.menu) {
       var mb = document.querySelectorAll('#tv-menu button');
       var out = [];
@@ -246,6 +252,84 @@
     refreshFocus();
   }
 
+  /* ---------- dialog 表单兼容：4.4 不支持 method="dialog"，点击按钮会误跳转 ---------- */
+  function initDialogForms() {
+    var forms = document.querySelectorAll('form[method="dialog"]');
+    for (var i = 0; i < forms.length; i++) {
+      var form = forms[i];
+      if (form.__tvPatched) continue;
+      form.__tvPatched = true;
+      var closeParent = function (el) {
+        var p = el.parentNode;
+        while (p && p.nodeName !== 'DIALOG') p = p.parentNode;
+        if (p && p.close) p.close();
+        if (window.tvRefreshFocus) window.tvRefreshFocus();
+      };
+      form.onsubmit = function (e) {
+        if (e && e.preventDefault) e.preventDefault();
+        closeParent(this);
+        return false;
+      };
+      var bs = form.querySelectorAll('button');
+      for (var j = 0; j < bs.length; j++) {
+        bs[j].onclick = function (e) {
+          if (e && e.preventDefault) e.preventDefault();
+          closeParent(this);
+          return false;
+        };
+      }
+    }
+  }
+
+  /* ---------- 首页返回键：确认是否关闭软件 ---------- */
+  function exitDialog() {
+    var d = document.getElementById('tv-exit-dialog');
+    if (!d) {
+      d = document.createElement('div');
+      d.id = 'tv-exit-dialog';
+      d.className = 'tv-confirm';
+      d.innerHTML = '<div class="panel"><h3>关闭软件</h3>' +
+        '<p>确定要关闭「单词保卫战」吗？</p>' +
+        '<div class="row"><button type="button" data-act="cancel">取消</button>' +
+        '<button type="button" data-act="exit">退出</button></div></div>';
+      document.body.appendChild(d);
+      var bs = d.getElementsByTagName('button');
+      bs[0].onclick = function () { closeExitDialog(); };
+      bs[1].onclick = function () { doExit(); };
+    }
+    return d;
+  }
+  function openExitDialog() {
+    if (state.drag) cancelDrag();
+    state.exit = true;
+    var d = exitDialog();
+    d.className = 'tv-confirm on';
+    setFocus(null);
+    refreshFocus();
+  }
+  function closeExitDialog() {
+    state.exit = false;
+    var d = document.getElementById('tv-exit-dialog');
+    if (d) d.className = 'tv-confirm';
+    refreshFocus();
+  }
+  function doExit() {
+    // 优先走原生桥直接 finish()；老版本没有桥时用旧返回键通道让原生 finish()。
+    var ok = false;
+    try {
+      if (window.tvBridge && window.tvBridge.exitApp) {
+        window.tvBridge.exitApp();
+        ok = true;
+      }
+    } catch (e) {}
+    if (ok) return;
+    // 兜底 1：自定义 URL，由 WebViewClient 捕获后 finish()。
+    try { window.location.href = 'tvexit://close'; return; } catch (e) {}
+    // 兜底 2：让下一次原生返回键返回 false 触发 finish()。
+    closeExitDialog();
+    state.forceExit = true;
+  }
+
   /* ---------- 主界面“关于”弹窗 ---------- */
   function initAbout() {
     var btn = document.getElementById('about-btn');
@@ -272,11 +356,15 @@
   };
   window.tvKey = function (k) {
     if (window.__patchDialogs) window.__patchDialogs();
+    initDialogForms();
     if (state.drag) return dragKey(k);
 
-    if (state.menu) {
-      if (k === 'back') { closeMenu(); return true; }
-      // 菜单按钮竖排：用索引循环切换，不依赖坐标计算，遥控器必然能选中。
+    if (state.menu || state.exit) {
+      if (k === 'back') {
+        if (state.exit) closeExitDialog(); else closeMenu();
+        return true;
+      }
+      // 菜单/确认框按钮用索引循环切换，不依赖坐标计算，遥控器必然能选中。
       var mb = focusables();
       if (!mb.length) return true;
       var idx = state.focus ? mb.indexOf(state.focus) : -1;
@@ -294,14 +382,33 @@
     }
 
     if (k === 'back') {
+      if (state.forceExit) return false; // 兜底：让原生 finish()
+      // 1) 认读/提示弹窗（div.mask）优先关闭
+      var modal = $('modal');
+      if (modal && String(modal.className).indexOf('hide') < 0) {
+        if (window.closeModal) window.closeModal();
+        else modal.className += ' hide';
+        refreshFocus();
+        return true;
+      }
+      // 2) 书页弹窗：返回键等同点击「合上课本」
+      var dialog = document.querySelector('dialog[open]');
+      if (dialog) {
+        var bc = dialog.querySelector('.book-close');
+        if (bc && bc.click) bc.click();
+        else if (dialog.close) dialog.close();
+        refreshFocus();
+        return true;
+      }
+      // 3) 游戏页：暂停 / 继续 / 退出菜单（保持原行为）
       var game = $('game'), home = $('home');
       if (game && home && home.className.match(/\bhide\b/) && !game.className.match(/\bhide\b/)) {
         openMenu();
         return true;
       }
-      var dialog = document.querySelector('dialog[open]');
-      if (dialog) { if (dialog.close) dialog.close(); refreshFocus(); return true; }
-      return false;
+      // 4) 首页 / 单元首页：确认是否关闭软件
+      openExitDialog();
+      return true;
     }
 
     // 选中传送带卡片后，只有按确定键才拿起植物进入落点模式；
@@ -324,6 +431,7 @@
 
   window.setTimeout(function () {
     window.__patchDialogs && window.__patchDialogs();
+    initDialogForms();
     initAbout();
     fit();
     refreshFocus();
