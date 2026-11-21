@@ -214,14 +214,18 @@ function transformHtml(srcName, dstName) {
     html = html.replace(/\sid="(volume-[0-3]-[01])"/g, ' id="tv-$1"');
   }
   // 所有本地 JS/CSS 统一带版本号，避免 WebView 缓存旧脚本导致修复不生效。
-  const V = 'v16';
+  const V = 'v17';
   html = html.replace(/(\.css)(\?[^"']*)?/g, '$1?v=' + V);
   html = html.replace(/(\.js)(\?[^"']*)?/g, '$1?v=' + V);
   const compat = '<script src="compat.js?v=' + V + '"></script>\n';
   const override = '  <link rel="stylesheet" href="tv-override.css?v=' + V + '">\n';
   const adapter = '<script defer src="tv-adapter.js?v=' + V + '"></script>\n';
   html = html.replace('</head>', '  ' + override + '  ' + compat + '</head>');
-  html = html.replace('</body>', '  ' + adapter + '</body>');
+  // 关键：desk.js 是 defer，带 hash 的页面一加载就 showModal()；若等 tv-adapter.js
+  // 再打 dialog 补丁，这一瞬间用的是原生 top-layer 弹窗，脱离 body 缩放而巨大/带滚动条。
+  // body 末尾的内联同步脚本一定早于所有 defer 脚本执行，先把 dialog 降级为普通 DOM。
+  const earlyPatch = '<script>window.__patchDialogs && window.__patchDialogs();</script>\n  ';
+  html = html.replace('</body>', earlyPatch + adapter + '</body>');
   write(path.join(OUT, dstName), html);
 }
 transformHtml('index.html', 'index.html');
